@@ -1,31 +1,61 @@
 // Import Crates
-
+use std::fs;
+use sha2::{Sha256, Digest};
 fn merkle_root(filename: String) -> String {
     // Read Input Data from txt file
-    todo!()
-
+    let file = fs::read_to_string(&filename).expect("Can't read the file");
+ 
     // Create vector of strings for leaves
-    
-
+    let mut file_vec: Vec<String> = Vec::new();
+    for line in file.lines(){
+        file_vec.push(line.to_string());
+ 
+    };
+    //getting the tree power
+    let  a = file_vec[0].parse().unwrap();
+    file_vec.remove(0);
     // Hash inputs and append to vector
-    
-
+    let mut hex_vec: Vec<String> = Vec::new();
+ 
     // Then Write an algorithm that calculates the ROOT
-
-
+    for x in 0..a{
+        hex_vec  = file_vec.iter().map(|x: &String| hash_input(x)).collect();
+        file_vec = create_next_level(hex_vec);
+ 
+    }
+ 
     // Return the root hash as a String
+    hash_input(&file_vec[0])
+
 }
 
-// You can use templates below or just remove
-// Helper function to create a next leaves level may help you :)
+//create_next_level function
 fn create_next_level(current_level: Vec::<String>) -> Vec::<String> {
-    todo!();
+    let mut next:Vec<String> =Vec::new();
+    let mut str = String::from("");
+    for (index, value) in current_level.iter().enumerate() {
+        if index % 2 == 0 {
+            str = value.clone();
+        }
+        else {
+            str.push_str(&value);
+            next.push(str.clone());
+        }
+    }
+    next
+
 }
 
 
-// Helper function may help you to hash an input or You can write macro rules
+// function for hashing
 fn hash_input(a: &str) -> String {
-    todo!();
+    let mut hasher = Sha256::new();
+    let input = a;
+    hasher.update(input);
+    let hash = hasher.finalize();
+    let hex = hex::encode(&hash);
+ 
+    return hex.to_string();
 }
 
 fn main() { 
